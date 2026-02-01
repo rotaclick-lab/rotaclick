@@ -1,10 +1,9 @@
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import { createSupabaseServerClient } from "@/src/lib/supabase/server";
+import Link from "next/link";
 import { Card } from "@/components/Card";
-import { Input } from "@/components/Input";
 import { Button } from "@/components/Button";
-import { enviarProposta } from "./actions";
 
 type OpenRequest = {
   id: string;
@@ -167,36 +166,11 @@ export default async function CarrierSolicitacoesPage() {
                   Esta solicitação já teve uma proposta escolhida. Novas propostas estão bloqueadas.
                 </div>
               ) : (
-                <form action={enviarProposta} className="grid gap-3 sm:grid-cols-12 sm:items-end">
-                  <input type="hidden" name="freight_request_id" value={r.id} />
-
-                  <div className="sm:col-span-4">
-                    <label className="text-sm font-medium text-slate-700" htmlFor={`price-${r.id}`}>
-                      Valor (R$)
-                    </label>
-                    <Input id={`price-${r.id}`} name="price" inputMode="decimal" placeholder="2500,00" />
-                  </div>
-
-                  <div className="sm:col-span-3">
-                    <label className="text-sm font-medium text-slate-700" htmlFor={`deadline-${r.id}`}>
-                      Prazo (dias)
-                    </label>
-                    <Input id={`deadline-${r.id}`} name="deadline_days" inputMode="numeric" placeholder="3" />
-                  </div>
-
-                  <div className="sm:col-span-5">
-                    <label className="text-sm font-medium text-slate-700" htmlFor={`notes-${r.id}`}>
-                      Observações (opcional)
-                    </label>
-                    <Input id={`notes-${r.id}`} name="notes" placeholder="Ex: coleta amanhã" />
-                  </div>
-
-                  <div className="sm:col-span-12">
-                    <Button type="submit" disabled={!carrierId}>
-                      Enviar proposta
-                    </Button>
-                  </div>
-                </form>
+                <div className="flex items-center justify-end">
+                  <Link href={`/carrier/solicitacoes/${r.id}`}>
+                    <Button disabled={!carrierId}>Enviar proposta</Button>
+                  </Link>
+                </div>
               )}
             </Card>
           );
