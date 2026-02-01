@@ -115,6 +115,9 @@ export default async function CarrierSolicitacaoDetalhePage({
             {request.origin_city}/{request.origin_state} → {request.destination_city}/
             {request.destination_state}
           </p>
+          <p className="text-xs text-slate-500">
+            Informe valor e prazo. Você pode enviar apenas 1 proposta por solicitação.
+          </p>
         </div>
 
         <Link href="/carrier/solicitacoes">
@@ -184,7 +187,7 @@ export default async function CarrierSolicitacaoDetalhePage({
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-1">
                 <label className="text-sm font-medium text-slate-700" htmlFor="price">
-                  Valor (R$)
+                  Valor (R$) <span className="text-red-600">*</span>
                 </label>
                 <Input id="price" name="price" inputMode="decimal" placeholder="2500,00" />
               </div>
@@ -193,7 +196,7 @@ export default async function CarrierSolicitacaoDetalhePage({
                   className="text-sm font-medium text-slate-700"
                   htmlFor="deadline_days"
                 >
-                  Prazo (dias)
+                  Prazo (dias) <span className="text-red-600">*</span>
                 </label>
                 <Input
                   id="deadline_days"
@@ -217,8 +220,7 @@ export default async function CarrierSolicitacaoDetalhePage({
       ) : (
         <Card>
           <p className="text-sm text-slate-700">
-            Não é possível enviar proposta: você já enviou uma proposta, ou a
-            solicitação não está mais aberta.
+            Você já enviou uma proposta ou a solicitação não está mais aberta.
           </p>
         </Card>
       )}

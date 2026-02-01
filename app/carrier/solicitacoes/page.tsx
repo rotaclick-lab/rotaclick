@@ -85,14 +85,21 @@ export default async function CarrierSolicitacoesPage() {
   const myQuotes = (myQuotesRows ?? []) as MyQuote[];
   const myQuoteByRequestId = new Map(myQuotes.map((q) => [q.freight_request_id, q]));
 
+  const quoteStatusLabel: Record<MyQuote["status"], string> = {
+    SENT: "Enviada",
+    WITHDRAWN: "Retirada",
+    WON: "Vencedora",
+    LOST: "Perdedora",
+  };
+
   return (
     <div className="mx-auto max-w-5xl space-y-4">
       <div className="space-y-1">
         <h1 className="text-xl font-semibold tracking-tight text-brand-secondary">
-          Área do transportador
+          Solicitações abertas
         </h1>
         <p className="text-sm text-slate-600">
-          Veja solicitações abertas e envie uma proposta (1 por solicitação).
+          Abra uma solicitação para enviar 1 proposta.
         </p>
       </div>
 
@@ -126,7 +133,9 @@ export default async function CarrierSolicitacoesPage() {
 
       {openRequests.length === 0 && !openRequestsError ? (
         <Card>
-          <p className="text-sm text-slate-700">Não há solicitações abertas agora.</p>
+          <p className="text-sm text-slate-700">
+            Não há solicitações abertas no momento.
+          </p>
         </Card>
       ) : null}
 
@@ -155,11 +164,13 @@ export default async function CarrierSolicitacoesPage() {
 
               {myQuote ? (
                 <div className="rounded-md border border-slate-200 bg-slate-50 p-3 text-sm">
-                  <div className="font-medium text-slate-900">Sua proposta</div>
+                  <div className="font-medium text-slate-900">Sua proposta (enviada)</div>
                   <div className="text-slate-700">
                     {formatMoneyBRLFromCents(myQuote.price_cents)} • {myQuote.deadline_days} dias
                   </div>
-                  <div className="text-xs text-slate-500">Status: {myQuote.status}</div>
+                  <div className="text-xs text-slate-500">
+                    Status: {quoteStatusLabel[myQuote.status] ?? myQuote.status}
+                  </div>
                 </div>
               ) : blocked ? (
                 <div className="rounded-md border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">

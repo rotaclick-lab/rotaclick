@@ -43,6 +43,34 @@ function money(cents: number) {
   return (cents / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 }
 
+function requestStatusLabel(status: RequestRow["status"]) {
+  switch (status) {
+    case "OPEN":
+      return "Aberta";
+    case "CLOSED":
+      return "Fechada";
+    case "CANCELLED":
+      return "Cancelada";
+    default:
+      return status;
+  }
+}
+
+function quoteStatusLabel(status: FreightQuoteStatus) {
+  switch (status) {
+    case "SENT":
+      return "Enviada";
+    case "WON":
+      return "Vencedora";
+    case "LOST":
+      return "Perdedora";
+    case "WITHDRAWN":
+      return "Retirada";
+    default:
+      return status;
+  }
+}
+
 export default async function SolicitacaoDetalhePage({
   params,
 }: {
@@ -108,6 +136,9 @@ export default async function SolicitacaoDetalhePage({
         <p className="text-sm text-slate-600">
           {request.origin_city}/{request.origin_state} → {request.destination_city}/{request.destination_state}
         </p>
+        <p className="text-xs text-slate-500">
+          Compare as propostas e escolha a vencedora. Isso fecha a solicitação.
+        </p>
       </div>
 
       {errorText ? (
@@ -124,7 +155,7 @@ export default async function SolicitacaoDetalhePage({
 
       <Card className="space-y-2">
         <div className="text-sm text-slate-700">
-          <span className="font-medium">Status:</span> {request.status}
+          <span className="font-medium">Status:</span> {requestStatusLabel(request.status)}
         </div>
         {request.pickup_date ? (
           <div className="text-sm text-slate-700">
@@ -175,7 +206,9 @@ export default async function SolicitacaoDetalhePage({
         <h2 className="text-sm font-semibold text-slate-900">Propostas</h2>
 
         {quotes.length === 0 ? (
-          <p className="text-sm text-slate-600">Nenhuma proposta ainda.</p>
+          <p className="text-sm text-slate-600">
+            Ainda não há propostas para esta solicitação.
+          </p>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
@@ -205,13 +238,13 @@ export default async function SolicitacaoDetalhePage({
                       </td>
                       <td className="py-2 pr-4">{money(q.price_cents)}</td>
                       <td className="py-2 pr-4">{q.deadline_days} dias</td>
-                      <td className="py-2 pr-4">{q.status}</td>
+                      <td className="py-2 pr-4">{quoteStatusLabel(q.status)}</td>
                       <td className="py-2">
                         {canChoose ? (
                           <form action={escolherProposta}>
                             <input type="hidden" name="freight_request_id" value={request.id} />
                             <input type="hidden" name="quote_id" value={q.id} />
-                            <Button type="submit">Escolher</Button>
+                            <Button type="submit">Escolher como vencedora</Button>
                           </form>
                         ) : (
                           <span className="text-xs text-slate-500">--</span>
@@ -227,7 +260,7 @@ export default async function SolicitacaoDetalhePage({
 
         {!canChoose ? (
           <p className="text-xs text-slate-500">
-            Solicitação fechada ou proposta já escolhida. Novas propostas ficam bloqueadas.
+            Solicitação fechada. Novas propostas ficam bloqueadas.
           </p>
         ) : null}
       </Card>

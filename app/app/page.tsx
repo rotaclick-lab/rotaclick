@@ -47,7 +47,9 @@ export default async function AppPage() {
           <h1 className="text-xl font-semibold tracking-tight text-brand-secondary">
             Bem-vindo ao RotaClick
           </h1>
-          <p className="text-sm text-slate-600">Este é um placeholder do dashboard.</p>
+          <p className="text-sm text-slate-600">
+            Escolha uma opção abaixo para continuar.
+          </p>
         </div>
 
         {showProfileWarning ? (
@@ -79,13 +81,13 @@ export default async function AppPage() {
         <div className="flex flex-wrap items-center gap-3">
           {profile?.role === "ADMIN" || profile?.role === "CLIENTE" ? (
             <Link href="/app/solicitacoes">
-              <Button>Ver solicitações</Button>
+              <Button>Solicitações da minha empresa</Button>
             </Link>
           ) : null}
 
           {profile?.role === "TRANSPORTADOR" ? (
             <Link href="/carrier/solicitacoes">
-              <Button>Ir para solicitações</Button>
+              <Button>Solicitações abertas (transportador)</Button>
             </Link>
           ) : null}
         </div>

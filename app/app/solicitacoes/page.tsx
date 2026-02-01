@@ -33,6 +33,12 @@ export default async function SolicitacoesPage() {
 
   const requests = (rows ?? []) as FreightRequest[];
 
+  const statusLabel: Record<string, string> = {
+    OPEN: "Aberta",
+    CLOSED: "Fechada",
+    CANCELLED: "Cancelada",
+  };
+
   return (
     <div className="mx-auto max-w-5xl space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -40,7 +46,9 @@ export default async function SolicitacoesPage() {
           <h1 className="text-xl font-semibold tracking-tight text-brand-secondary">
             Solicitações
           </h1>
-          <p className="text-sm text-slate-600">Solicitações da sua empresa.</p>
+          <p className="text-sm text-slate-600">
+            Crie uma solicitação para receber propostas das transportadoras.
+          </p>
         </div>
 
         <Link href="/app/solicitacoes/nova">
@@ -56,8 +64,9 @@ export default async function SolicitacoesPage() {
 
       {requests.length === 0 && !error ? (
         <Card>
+          <p className="text-sm font-medium text-slate-900">Nenhuma solicitação ainda</p>
           <p className="text-sm text-slate-700">
-            Nenhuma solicitação ainda. Crie a primeira para receber propostas.
+            Crie sua primeira solicitação para começar a receber propostas.
           </p>
         </Card>
       ) : null}
@@ -72,7 +81,10 @@ export default async function SolicitacoesPage() {
                     {r.origin_city}/{r.origin_state} → {r.destination_city}/{r.destination_state}
                   </div>
                   <div className="text-xs text-slate-500">
-                    Status: <span className="font-medium">{r.status}</span>
+                    Status:{" "}
+                    <span className="font-medium">
+                      {statusLabel[r.status] ?? r.status}
+                    </span>
                     {r.pickup_date ? (
                       <>
                         {" "}• Coleta: {new Date(r.pickup_date).toLocaleDateString("pt-BR")}
