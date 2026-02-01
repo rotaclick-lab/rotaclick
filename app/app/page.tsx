@@ -78,14 +78,14 @@ export default async function AppPage() {
 
         <div className="flex flex-wrap items-center gap-3">
           {profile?.role === "ADMIN" || profile?.role === "CLIENTE" ? (
-            <Link href="/app/requests">
+            <Link href="/app/solicitacoes">
               <Button>Ver solicitações</Button>
             </Link>
           ) : null}
 
           {profile?.role === "TRANSPORTADOR" ? (
-            <Link href="/app/carrier/requests">
-              <Button>Ver solicitações abertas</Button>
+            <Link href="/carrier/solicitacoes">
+              <Button>Ir para solicitações</Button>
             </Link>
           ) : null}
         </div>
