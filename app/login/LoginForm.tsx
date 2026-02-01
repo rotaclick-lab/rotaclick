@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/Button";
 import { Input } from "@/components/Input";
 import { Card } from "@/components/Card";
+import { PageHeader } from "@/components/PageHeader";
+import { Feedback } from "@/components/Feedback";
 import { createSupabaseBrowserClient } from "@/src/lib/supabase/client";
 
 type FormState = {
@@ -80,16 +82,12 @@ export function LoginForm() {
   }
 
   return (
-    <Card className="mx-auto w-full max-w-md">
+    <Card className="mx-auto w-full max-w-md border-slate-200/80 bg-white/80 shadow-sm backdrop-blur">
       <div className="flex flex-col gap-6">
-        <div className="space-y-1">
-          <h1 className="text-xl font-semibold tracking-tight text-brand-secondary">
-            Acesse o RotaClick
-          </h1>
-          <p className="text-sm text-slate-600">
-            Use seu e-mail e senha cadastrados no Supabase.
-          </p>
-        </div>
+        <PageHeader
+          title="Acesse o RotaClick"
+          subtitle="Use seu e-mail e senha cadastrados no Supabase."
+        />
 
         <form onSubmit={onSubmit} className="flex flex-col gap-4">
           <div className="space-y-1">
@@ -129,15 +127,11 @@ export function LoginForm() {
             />
           </div>
 
-          {state.error ? (
-            <div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-800">
-              {state.error}
-            </div>
-          ) : null}
+          {state.error ? <Feedback variant="error" title={state.error} /> : null}
 
           <Button
             type="submit"
-            className="w-full bg-black text-white hover:bg-black/90 focus-visible:ring-black"
+            className="w-full"
             disabled={state.isSubmitting}
           >
             {state.isSubmitting ? "Entrando…" : "Entrar"}
