@@ -1,0 +1,5 @@
+# Supabase local development configuration
+# This file is generated/maintained by the Supabase CLI in most setups.
+# It's safe to keep minimal for now; the CLI may update it.
+
+project_id = "rotaclick"
