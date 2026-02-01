@@ -122,7 +122,7 @@ export default async function SolicitacaoDetalhePage({
 
       {successText ? (
         <div className="rounded-md border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-800">
-          {successText}
+          Proposta escolhida. Solicitação fechada.
         </div>
       ) : null}
 
@@ -179,6 +179,12 @@ export default async function SolicitacaoDetalhePage({
       <Card className="space-y-3">
         <h2 className="text-sm font-semibold text-slate-900">Propostas</h2>
 
+        {canChoose ? (
+          <div className="rounded-md border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">
+            Ao escolher, a solicitação será fechada e novas propostas serão bloqueadas.
+          </div>
+        ) : null}
+
         {quotes.length === 0 ? (
           <p className="text-sm text-slate-600">
             Ainda não há propostas para esta solicitação.
@@ -201,7 +207,13 @@ export default async function SolicitacaoDetalhePage({
                     request.selected_quote_id === q.id || q.status === "WON";
                   const carrierName = q.carriers?.[0]?.name;
                   return (
-                    <tr key={q.id} className="border-b last:border-b-0">
+                    <tr
+                      key={q.id}
+                      className={
+                        "border-b last:border-b-0 " +
+                        (isWinner ? "bg-emerald-50" : "")
+                      }
+                    >
                       <td className="py-2 pr-4">
                         {carrierName ?? q.carrier_id}
                         {isWinner ? (
@@ -223,7 +235,7 @@ export default async function SolicitacaoDetalhePage({
                             <Button type="submit">Escolher como vencedora</Button>
                           </form>
                         ) : (
-                          <span className="text-xs text-slate-500">--</span>
+                          <span className="text-xs text-slate-500">Ação indisponível</span>
                         )}
                       </td>
                     </tr>
