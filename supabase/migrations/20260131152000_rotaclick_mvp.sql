@@ -30,6 +30,33 @@ create table if not exists public.profiles (
   updated_at timestamptz not null default now()
 );
 
+-- -----------------------------
+-- 1.1) Helpers (evita recursão em policies)
+-- -----------------------------
+-- Observação: Policies que consultam a própria tabela (ex: subquery em profiles)
+-- podem gerar erro 42P17 (infinite recursion). Para evitar isso, usamos funções
+-- SECURITY DEFINER que consultam a tabela como o dono da função.
+
+create or replace function public.current_profile_role()
+returns text
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select role from public.profiles where id = auth.uid();
+$$;
+
+create or replace function public.current_profile_company_id()
+returns uuid
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select company_id from public.profiles where id = auth.uid();
+$$;
+
 create index if not exists profiles_company_id_idx on public.profiles(company_id);
 create index if not exists profiles_role_idx on public.profiles(role);
 
@@ -126,9 +153,9 @@ to authenticated
 using (
   id = auth.uid()
   or (
-    (select p.role from public.profiles p where p.id = auth.uid()) = 'ADMIN'
+    public.current_profile_role() = 'ADMIN'
     and company_id is not null
-    and company_id = (select p2.company_id from public.profiles p2 where p2.id = auth.uid())
+    and company_id = public.current_profile_company_id()
   )
 );
 
