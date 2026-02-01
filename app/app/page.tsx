@@ -30,7 +30,7 @@ export default async function AppPage() {
     redirect("/login");
   }
 
-  const { data: profile } = await supabase
+  const { data: profile, error: profileError } = await supabase
     .from("profiles")
     .select("role")
     .eq("id", data.user.id)
@@ -58,6 +58,15 @@ export default async function AppPage() {
               <div>
                 <strong>User ID:</strong> {data.user.id}
               </div>
+              {profileError ? (
+                <div className="mt-2">
+                  <strong>Erro do Supabase:</strong>{" "}
+                  <span className="font-mono">
+                    {profileError.code ? `${profileError.code}: ` : ""}
+                    {profileError.message}
+                  </span>
+                </div>
+              ) : null}
               <div>
                 <strong>Dica:</strong> confira se existe uma linha em <code>public.profiles</code>
                 com esse <code>id</code> e se as policies de RLS permitem <code>SELECT</code> do
