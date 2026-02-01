@@ -61,7 +61,7 @@ export default async function AppPage() {
         </div>
 
         <form action={signOut}>
-          <Button variant="secondary">Sair</Button>
+          <Button type="submit">Sair</Button>
         </form>
       </Card>
     </div>

@@ -8,9 +8,9 @@ export type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
 
 const VARIANT_CLASSES: Record<ButtonVariant, string> = {
   primary:
-    "bg-brand-primary text-white hover:bg-brand-primary/90 focus-visible:ring-brand-primary",
+    "bg-black text-white hover:bg-black/90 focus-visible:ring-black",
   secondary:
-    "bg-brand-secondary text-white hover:bg-brand-secondary/90 focus-visible:ring-brand-secondary",
+    "bg-black text-white hover:bg-black/90 focus-visible:ring-black",
   ghost:
     "bg-transparent text-slate-900 hover:bg-slate-100 focus-visible:ring-slate-400",
 };

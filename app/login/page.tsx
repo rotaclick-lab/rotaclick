@@ -23,7 +23,7 @@ export default async function LoginPage() {
   }
 
   return (
-    <div className="py-6">
+    <div className="flex min-h-[calc(100dvh-3.5rem-5rem)] items-center justify-center py-6">
       <LoginForm />
     </div>
   );

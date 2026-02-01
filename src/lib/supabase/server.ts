@@ -9,18 +9,26 @@ export async function createSupabaseServerClient() {
 
   const cookieStore = await cookies();
 
+  // Implementação recomendada pelo @supabase/ssr para Next.js:
+  // - get/set/remove por cookie
+  // - em Server Components, set/remove podem falhar (por isso o try/catch)
   return createServerClient(url, anonKey, {
     cookies: {
-      getAll() {
-        return cookieStore.getAll();
+      get(name) {
+        return cookieStore.get(name)?.value;
       },
-      setAll(cookiesToSet) {
+      set(name, value, options) {
         try {
-          cookiesToSet.forEach(({ name, value, options }) => {
-            cookieStore.set(name, value, options);
-          });
+          cookieStore.set({ name, value, ...options });
         } catch {
-          // Ignore if called from a Server Component where setting cookies isn't allowed.
+          // Ignorar quando não é permitido setar cookie (ex: Server Component)
+        }
+      },
+      remove(name, options) {
+        try {
+          cookieStore.set({ name, value: "", ...options, maxAge: 0 });
+        } catch {
+          // Ignorar quando não é permitido remover cookie (ex: Server Component)
         }
       },
     },

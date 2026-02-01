@@ -81,67 +81,69 @@ export function LoginForm() {
 
   return (
     <Card className="mx-auto w-full max-w-md">
-      <div className="space-y-1">
-        <h1 className="text-xl font-semibold tracking-tight text-brand-secondary">
-          Acesse o RotaClick
-        </h1>
-        <p className="text-sm text-slate-600">
-          Use seu e-mail e senha cadastrados no Supabase.
-        </p>
-      </div>
-
-      <form onSubmit={onSubmit} className="mt-6 space-y-4">
+      <div className="flex flex-col gap-6">
         <div className="space-y-1">
-          <label className="text-sm font-medium text-slate-700" htmlFor="email">
-            E-mail
-          </label>
-          <Input
-            id="email"
-            name="email"
-            type="email"
-            autoComplete="email"
-            required
-            value={state.email}
-            onChange={(e) => setState((s) => ({ ...s, email: e.target.value }))}
-            placeholder="voce@empresa.com"
-          />
+          <h1 className="text-xl font-semibold tracking-tight text-brand-secondary">
+            Acesse o RotaClick
+          </h1>
+          <p className="text-sm text-slate-600">
+            Use seu e-mail e senha cadastrados no Supabase.
+          </p>
         </div>
 
-        <div className="space-y-1">
-          <label
-            className="text-sm font-medium text-slate-700"
-            htmlFor="password"
-          >
-            Senha
-          </label>
-          <Input
-            id="password"
-            name="password"
-            type="password"
-            autoComplete="current-password"
-            required
-            value={state.password}
-            onChange={(e) =>
-              setState((s) => ({ ...s, password: e.target.value }))
-            }
-            placeholder="Sua senha"
-          />
-        </div>
-
-        {state.error ? (
-          <div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-800">
-            {state.error}
+        <form onSubmit={onSubmit} className="flex flex-col gap-4">
+          <div className="space-y-1">
+            <label className="text-sm font-medium text-slate-700" htmlFor="email">
+              E-mail
+            </label>
+            <Input
+              id="email"
+              name="email"
+              type="email"
+              autoComplete="email"
+              required
+              value={state.email}
+              onChange={(e) => setState((s) => ({ ...s, email: e.target.value }))}
+              placeholder="voce@empresa.com"
+            />
           </div>
-        ) : null}
 
-        <Button
-          type="submit"
-          className="w-full"
-          disabled={state.isSubmitting}
-        >
-          {state.isSubmitting ? "Entrando…" : "Entrar"}
-        </Button>
-      </form>
+          <div className="space-y-1">
+            <label
+              className="text-sm font-medium text-slate-700"
+              htmlFor="password"
+            >
+              Senha
+            </label>
+            <Input
+              id="password"
+              name="password"
+              type="password"
+              autoComplete="current-password"
+              required
+              value={state.password}
+              onChange={(e) =>
+                setState((s) => ({ ...s, password: e.target.value }))
+              }
+              placeholder="Sua senha"
+            />
+          </div>
+
+          {state.error ? (
+            <div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-800">
+              {state.error}
+            </div>
+          ) : null}
+
+          <Button
+            type="submit"
+            className="w-full bg-black text-white hover:bg-black/90 focus-visible:ring-black"
+            disabled={state.isSubmitting}
+          >
+            {state.isSubmitting ? "Entrando…" : "Entrar"}
+          </Button>
+        </form>
+      </div>
     </Card>
   );
 }
