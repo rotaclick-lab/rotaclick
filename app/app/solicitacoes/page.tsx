@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/src/lib/supabase/server";
 import { Card } from "@/components/Card";
 import { Button } from "@/components/Button";
+import { StatusBadge } from "@/components/StatusBadge";
 import type { FreightRequest } from "@/src/lib/db/types";
 
 export default async function SolicitacoesPage() {
@@ -32,12 +33,6 @@ export default async function SolicitacoesPage() {
     .order("created_at", { ascending: false });
 
   const requests = (rows ?? []) as FreightRequest[];
-
-  const statusLabel: Record<string, string> = {
-    OPEN: "Aberta",
-    CLOSED: "Fechada",
-    CANCELLED: "Cancelada",
-  };
 
   return (
     <div className="mx-auto max-w-5xl space-y-4">
@@ -81,10 +76,7 @@ export default async function SolicitacoesPage() {
                     {r.origin_city}/{r.origin_state} → {r.destination_city}/{r.destination_state}
                   </div>
                   <div className="text-xs text-slate-500">
-                    Status:{" "}
-                    <span className="font-medium">
-                      {statusLabel[r.status] ?? r.status}
-                    </span>
+                    Status: <StatusBadge kind="request" status={r.status} />
                     {r.pickup_date ? (
                       <>
                         {" "}• Coleta: {new Date(r.pickup_date).toLocaleDateString("pt-BR")}

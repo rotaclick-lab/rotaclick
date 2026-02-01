@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 import { createSupabaseServerClient } from "@/src/lib/supabase/server";
 import { Card } from "@/components/Card";
 import { Button } from "@/components/Button";
+import { StatusBadge } from "@/components/StatusBadge";
 import type { FreightQuoteStatus } from "@/src/lib/db/types";
 import { escolherProposta } from "./actions";
 
@@ -41,34 +42,6 @@ type QuoteRow = {
 
 function money(cents: number) {
   return (cents / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
-}
-
-function requestStatusLabel(status: RequestRow["status"]) {
-  switch (status) {
-    case "OPEN":
-      return "Aberta";
-    case "CLOSED":
-      return "Fechada";
-    case "CANCELLED":
-      return "Cancelada";
-    default:
-      return status;
-  }
-}
-
-function quoteStatusLabel(status: FreightQuoteStatus) {
-  switch (status) {
-    case "SENT":
-      return "Enviada";
-    case "WON":
-      return "Vencedora";
-    case "LOST":
-      return "Perdedora";
-    case "WITHDRAWN":
-      return "Retirada";
-    default:
-      return status;
-  }
 }
 
 export default async function SolicitacaoDetalhePage({
@@ -155,7 +128,8 @@ export default async function SolicitacaoDetalhePage({
 
       <Card className="space-y-2">
         <div className="text-sm text-slate-700">
-          <span className="font-medium">Status:</span> {requestStatusLabel(request.status)}
+          <span className="font-medium">Status:</span>{" "}
+          <StatusBadge kind="request" status={request.status} />
         </div>
         {request.pickup_date ? (
           <div className="text-sm text-slate-700">
@@ -238,7 +212,9 @@ export default async function SolicitacaoDetalhePage({
                       </td>
                       <td className="py-2 pr-4">{money(q.price_cents)}</td>
                       <td className="py-2 pr-4">{q.deadline_days} dias</td>
-                      <td className="py-2 pr-4">{quoteStatusLabel(q.status)}</td>
+                      <td className="py-2 pr-4">
+                        <StatusBadge kind="quote" status={q.status} />
+                      </td>
                       <td className="py-2">
                         {canChoose ? (
                           <form action={escolherProposta}>

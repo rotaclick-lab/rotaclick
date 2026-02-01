@@ -5,6 +5,7 @@ import { createSupabaseServerClient } from "@/src/lib/supabase/server";
 import { Card } from "@/components/Card";
 import { Input } from "@/components/Input";
 import { Button } from "@/components/Button";
+import { StatusBadge } from "@/components/StatusBadge";
 import { enviarPropostaDoDetalhe } from "./actions";
 
 type RequestRow = {
@@ -170,7 +171,10 @@ export default async function CarrierSolicitacaoDetalhePage({
           <div className="text-sm text-slate-700">
             {money(myQuote.price_cents)} • {myQuote.deadline_days} dias
           </div>
-          <div className="text-xs text-slate-500">Status: {myQuote.status}</div>
+          <div className="flex items-center gap-2 text-xs text-slate-500">
+            <span>Status:</span>
+            <StatusBadge kind="quote" status={myQuote.status} />
+          </div>
           {myQuote.notes ? (
             <div className="text-sm text-slate-700">
               <span className="font-medium">Obs:</span> {myQuote.notes}

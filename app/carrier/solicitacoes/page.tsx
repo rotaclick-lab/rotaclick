@@ -4,6 +4,7 @@ import { createSupabaseServerClient } from "@/src/lib/supabase/server";
 import Link from "next/link";
 import { Card } from "@/components/Card";
 import { Button } from "@/components/Button";
+import { StatusBadge } from "@/components/StatusBadge";
 
 type OpenRequest = {
   id: string;
@@ -85,13 +86,6 @@ export default async function CarrierSolicitacoesPage() {
   const myQuotes = (myQuotesRows ?? []) as MyQuote[];
   const myQuoteByRequestId = new Map(myQuotes.map((q) => [q.freight_request_id, q]));
 
-  const quoteStatusLabel: Record<MyQuote["status"], string> = {
-    SENT: "Enviada",
-    WITHDRAWN: "Retirada",
-    WON: "Vencedora",
-    LOST: "Perdedora",
-  };
-
   return (
     <div className="mx-auto max-w-5xl space-y-4">
       <div className="space-y-1">
@@ -168,8 +162,9 @@ export default async function CarrierSolicitacoesPage() {
                   <div className="text-slate-700">
                     {formatMoneyBRLFromCents(myQuote.price_cents)} • {myQuote.deadline_days} dias
                   </div>
-                  <div className="text-xs text-slate-500">
-                    Status: {quoteStatusLabel[myQuote.status] ?? myQuote.status}
+                  <div className="mt-1 flex items-center gap-2 text-xs text-slate-500">
+                    <span>Status:</span>
+                    <StatusBadge kind="quote" status={myQuote.status} />
                   </div>
                 </div>
               ) : blocked ? (
