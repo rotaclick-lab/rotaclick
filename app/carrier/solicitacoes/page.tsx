@@ -5,6 +5,8 @@ import Link from "next/link";
 import { Card } from "@/components/Card";
 import { Button } from "@/components/Button";
 import { StatusBadge } from "@/components/StatusBadge";
+import { PageHeader } from "@/components/PageHeader";
+import { Feedback } from "@/components/Feedback";
 
 type OpenRequest = {
   id: string;
@@ -87,50 +89,38 @@ export default async function CarrierSolicitacoesPage() {
   const myQuoteByRequestId = new Map(myQuotes.map((q) => [q.freight_request_id, q]));
 
   return (
-    <div className="mx-auto max-w-5xl space-y-4">
-      <div className="space-y-1">
-        <h1 className="text-xl font-semibold tracking-tight text-brand-secondary">
-          Solicitações abertas
-        </h1>
-        <p className="text-sm text-slate-600">
-          Abra uma solicitação para enviar 1 proposta.
-        </p>
-      </div>
+    <div className="space-y-4">
+      <PageHeader
+        title="Solicitações abertas"
+        subtitle="Abra uma solicitação para enviar 1 proposta."
+      />
 
-      {errorText ? (
-        <div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-800">
-          {errorText}
-        </div>
-      ) : null}
+      {errorText ? <Feedback variant="error" title={errorText} /> : null}
 
-      {successText ? (
-        <div className="rounded-md border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-800">
-          {successText}
-        </div>
-      ) : null}
+      {successText ? <Feedback variant="success" title={successText} /> : null}
 
       {!carrierId ? (
-        <Card>
-          <p className="text-sm text-slate-700">
-            Seu usuário ainda não está vinculado a uma transportadora. Crie um
-            registro em <strong>carriers</strong> com <strong>owner_user_id</strong> = seu
-            usuário.
-          </p>
-        </Card>
+        <Feedback
+          variant="warning"
+          title="Seu usuário ainda não está vinculado a uma transportadora"
+          description="Crie um registro em carriers com owner_user_id = seu usuário para conseguir enviar propostas."
+        />
       ) : null}
 
       {openRequestsError ? (
-        <div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-800">
-          Não foi possível carregar as solicitações abertas.
-        </div>
+        <Feedback
+          variant="error"
+          title="Não foi possível carregar as solicitações abertas"
+          description="Tente recarregar a página."
+        />
       ) : null}
 
       {openRequests.length === 0 && !openRequestsError ? (
-        <Card>
-          <p className="text-sm text-slate-700">
-            Não há solicitações abertas no momento.
-          </p>
-        </Card>
+        <Feedback
+          variant="info"
+          title="Não há solicitações abertas no momento"
+          description="Volte mais tarde para ver novas oportunidades."
+        />
       ) : null}
 
       <div className="grid gap-3">
@@ -145,10 +135,14 @@ export default async function CarrierSolicitacoesPage() {
                   <div className="text-sm font-medium text-slate-900">
                     {r.origin_city}/{r.origin_state} → {r.destination_city}/{r.destination_state}
                   </div>
-                  <div className="text-xs text-slate-500">
-                    {r.cargo_type ? <>Carga: {r.cargo_type} • </> : null}
-                    {r.pickup_date ? <>Coleta: {new Date(r.pickup_date).toLocaleDateString("pt-BR")} • </> : null}
-                    Status: {r.status}
+                  <div className="flex flex-wrap items-center gap-2 text-xs text-slate-500">
+                    <span>
+                      Status: <StatusBadge kind="request" status={r.status} />
+                    </span>
+                    {r.cargo_type ? <span>• Carga: {r.cargo_type}</span> : null}
+                    {r.pickup_date ? (
+                      <span>• Coleta: {new Date(r.pickup_date).toLocaleDateString("pt-BR")}</span>
+                    ) : null}
                   </div>
                 </div>
                 <div className="text-xs text-slate-500">
@@ -168,9 +162,11 @@ export default async function CarrierSolicitacoesPage() {
                   </div>
                 </div>
               ) : blocked ? (
-                <div className="rounded-md border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">
-                  Esta solicitação já teve uma proposta escolhida. Novas propostas estão bloqueadas.
-                </div>
+                <Feedback
+                  variant="warning"
+                  title="Propostas bloqueadas"
+                  description="Esta solicitação já teve uma proposta escolhida."
+                />
               ) : (
                 <div className="flex items-center justify-end">
                   <Link href={`/carrier/solicitacoes/${r.id}`}>

@@ -4,6 +4,9 @@ import { createSupabaseServerClient } from "@/src/lib/supabase/server";
 import { Card } from "@/components/Card";
 import { Input } from "@/components/Input";
 import { Button } from "@/components/Button";
+import { PageHeader } from "@/components/PageHeader";
+import { Feedback } from "@/components/Feedback";
+import { StatusBadge } from "@/components/StatusBadge";
 import { createQuote } from "./actions/createQuote";
 
 type OpenRequest = {
@@ -91,48 +94,38 @@ export default async function CarrierRequestsPage() {
   const myQuoteByRequestId = new Map(myQuotes.map((q) => [q.freight_request_id, q]));
 
   return (
-    <div className="mx-auto max-w-5xl space-y-4">
-      <div className="space-y-1">
-        <h1 className="text-xl font-semibold tracking-tight text-brand-secondary">
-          Solicitações abertas
-        </h1>
-        <p className="text-sm text-slate-600">
-          Envie uma proposta para cada solicitação (no máximo 1 por solicitação).
-        </p>
-      </div>
+    <div className="space-y-4">
+      <PageHeader
+        title="Solicitações abertas (antigo)"
+        subtitle="Mantido por compatibilidade. Prefira /carrier/solicitacoes."
+      />
 
-      {errorText ? (
-        <div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-800">
-          {errorText}
-        </div>
-      ) : null}
+      {errorText ? <Feedback variant="error" title={errorText} /> : null}
 
-      {successText ? (
-        <div className="rounded-md border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-800">
-          {successText}
-        </div>
-      ) : null}
+      {successText ? <Feedback variant="success" title={successText} /> : null}
 
       {!carrierId ? (
-        <Card>
-          <p className="text-sm text-slate-700">
-            Seu usuário ainda não está vinculado a uma transportadora. Crie um
-            registro em <strong>carriers</strong> com <strong>owner_user_id</strong> = seu
-            usuário.
-          </p>
-        </Card>
+        <Feedback
+          variant="warning"
+          title="Seu usuário ainda não está vinculado a uma transportadora"
+          description="Crie um registro em carriers com owner_user_id = seu usuário."
+        />
       ) : null}
 
       {openRequestsError ? (
-        <div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-800">
-          Não foi possível carregar as solicitações abertas.
-        </div>
+        <Feedback
+          variant="error"
+          title="Não foi possível carregar as solicitações abertas"
+          description="Tente recarregar a página."
+        />
       ) : null}
 
       {openRequests.length === 0 && !openRequestsError ? (
-        <Card>
-          <p className="text-sm text-slate-700">Não há solicitações abertas agora.</p>
-        </Card>
+        <Feedback
+          variant="info"
+          title="Não há solicitações abertas agora"
+          description="Volte mais tarde para ver novas oportunidades."
+        />
       ) : null}
 
       <div className="grid gap-3">
@@ -161,7 +154,10 @@ export default async function CarrierRequestsPage() {
                   <div className="text-slate-700">
                     {formatMoneyBRLFromCents(myQuote.price_cents)} • {myQuote.deadline_days} dias
                   </div>
-                  <div className="text-xs text-slate-500">Status: {myQuote.status}</div>
+                  <div className="mt-1 flex items-center gap-2 text-xs text-slate-500">
+                    <span>Status:</span>
+                    <StatusBadge kind="quote" status={myQuote.status} />
+                  </div>
                 </div>
               ) : (
                 <form action={createQuote} className="grid gap-3 sm:grid-cols-12 sm:items-end">

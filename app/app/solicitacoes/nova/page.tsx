@@ -1,9 +1,12 @@
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import { createSupabaseServerClient } from "@/src/lib/supabase/server";
+import Link from "next/link";
 import { Card } from "@/components/Card";
 import { Input } from "@/components/Input";
 import { Button } from "@/components/Button";
+import { PageHeader } from "@/components/PageHeader";
+import { Feedback } from "@/components/Feedback";
 import { criarSolicitacao } from "./actions";
 
 export default async function NovaSolicitacaoPage() {
@@ -31,23 +34,20 @@ export default async function NovaSolicitacaoPage() {
   }
 
   return (
-    <div className="mx-auto max-w-2xl">
+    <div className="space-y-4">
+      <PageHeader
+        title="Nova solicitação"
+        subtitle="Preencha os dados para receber propostas. Leva menos de 2 minutos."
+        cta={
+          <Link href="/app/solicitacoes">
+            <Button variant="secondary">Voltar</Button>
+          </Link>
+        }
+      />
+
+      {errorText ? <Feedback variant="error" title={errorText} /> : null}
+
       <Card className="space-y-4">
-        <div className="space-y-1">
-          <h1 className="text-xl font-semibold tracking-tight text-brand-secondary">
-            Nova solicitação
-          </h1>
-          <p className="text-sm text-slate-600">
-            Preencha os dados abaixo para receber propostas.
-          </p>
-        </div>
-
-        {errorText ? (
-          <div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-800">
-            {errorText}
-          </div>
-        ) : null}
-
         <form action={criarSolicitacao} className="space-y-4">
           <div className="space-y-3">
             <div className="flex items-baseline justify-between gap-2">

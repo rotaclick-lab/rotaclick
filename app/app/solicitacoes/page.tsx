@@ -3,6 +3,8 @@ import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/src/lib/supabase/server";
 import { Card } from "@/components/Card";
 import { Button } from "@/components/Button";
+import { PageHeader } from "@/components/PageHeader";
+import { Feedback } from "@/components/Feedback";
 import { StatusBadge } from "@/components/StatusBadge";
 import type { FreightRequest } from "@/src/lib/db/types";
 
@@ -35,35 +37,31 @@ export default async function SolicitacoesPage() {
   const requests = (rows ?? []) as FreightRequest[];
 
   return (
-    <div className="mx-auto max-w-5xl space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-xl font-semibold tracking-tight text-brand-secondary">
-            Solicitações
-          </h1>
-          <p className="text-sm text-slate-600">
-            Crie uma solicitação para receber propostas das transportadoras.
-          </p>
-        </div>
-
-        <Link href="/app/solicitacoes/nova">
-          <Button>Nova solicitação</Button>
-        </Link>
-      </div>
+    <div className="space-y-4">
+      <PageHeader
+        title="Solicitações"
+        subtitle="Crie uma solicitação para receber propostas das transportadoras."
+        cta={
+          <Link href="/app/solicitacoes/nova">
+            <Button>Nova solicitação</Button>
+          </Link>
+        }
+      />
 
       {error ? (
-        <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-800">
-          Não foi possível carregar as solicitações.
-        </div>
+        <Feedback
+          variant="error"
+          title="Não foi possível carregar as solicitações."
+          description="Tente recarregar a página. Se o problema persistir, fale com o suporte."
+        />
       ) : null}
 
       {requests.length === 0 && !error ? (
-        <Card>
-          <p className="text-sm font-medium text-slate-900">Nenhuma solicitação ainda</p>
-          <p className="text-sm text-slate-700">
-            Crie sua primeira solicitação para começar a receber propostas.
-          </p>
-        </Card>
+        <Feedback
+          variant="info"
+          title="Nenhuma solicitação ainda"
+          description="Crie sua primeira solicitação para começar a receber propostas."
+        />
       ) : null}
 
       <div className="grid gap-3">

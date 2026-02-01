@@ -6,6 +6,8 @@ import { Card } from "@/components/Card";
 import { Input } from "@/components/Input";
 import { Button } from "@/components/Button";
 import { StatusBadge } from "@/components/StatusBadge";
+import { PageHeader } from "@/components/PageHeader";
+import { Feedback } from "@/components/Feedback";
 import { enviarPropostaDoDetalhe } from "./actions";
 
 type RequestRow = {
@@ -106,41 +108,29 @@ export default async function CarrierSolicitacaoDetalhePage({
     !!carrierId && request.status === "OPEN" && !request.selected_quote_id && !myQuote;
 
   return (
-    <div className="mx-auto max-w-3xl space-y-4">
-      <div className="flex items-center justify-between gap-3">
-        <div className="space-y-1">
-          <h1 className="text-xl font-semibold tracking-tight text-brand-secondary">
-            Enviar proposta
-          </h1>
-          <p className="text-sm text-slate-600">
-            {request.origin_city}/{request.origin_state} → {request.destination_city}/
-            {request.destination_state}
-          </p>
-          <p className="text-xs text-slate-500">
-            Informe valor e prazo. Você pode enviar apenas 1 proposta por solicitação.
-          </p>
-        </div>
+    <div className="space-y-4">
+      <PageHeader
+        title="Enviar proposta"
+        subtitle={`${request.origin_city}/${request.origin_state} → ${request.destination_city}/${request.destination_state}`}
+        cta={
+          <Link href="/carrier/solicitacoes">
+            <Button variant="secondary">Voltar</Button>
+          </Link>
+        }
+      />
 
-        <Link href="/carrier/solicitacoes">
-          <Button variant="secondary">Voltar</Button>
-        </Link>
-      </div>
+      <p className="text-xs text-slate-500">
+        Informe valor e prazo. Você pode enviar apenas 1 proposta por solicitação.
+      </p>
 
-      {errorText ? (
-        <div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-800">
-          {errorText}
-        </div>
-      ) : null}
+      {errorText ? <Feedback variant="error" title={errorText} /> : null}
 
-      {successText ? (
-        <div className="rounded-md border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-800">
-          {successText}
-        </div>
-      ) : null}
+      {successText ? <Feedback variant="success" title={successText} /> : null}
 
       <Card className="space-y-2">
         <div className="text-sm text-slate-700">
-          <span className="font-medium">Status:</span> {request.status}
+          <span className="font-medium">Status:</span>{" "}
+          <StatusBadge kind="request" status={request.status} />
         </div>
         {request.pickup_date ? (
           <div className="text-sm text-slate-700">
@@ -156,13 +146,11 @@ export default async function CarrierSolicitacaoDetalhePage({
       </Card>
 
       {!carrierId ? (
-        <Card>
-          <p className="text-sm text-slate-700">
-            Seu usuário ainda não está vinculado a uma transportadora. Crie um
-            registro em <strong>carriers</strong> com <strong>owner_user_id</strong> = seu
-            usuário.
-          </p>
-        </Card>
+        <Feedback
+          variant="warning"
+          title="Seu usuário ainda não está vinculado a uma transportadora"
+          description="Crie um registro em carriers com owner_user_id = seu usuário."
+        />
       ) : null}
 
       {myQuote ? (
@@ -222,11 +210,11 @@ export default async function CarrierSolicitacaoDetalhePage({
           </form>
         </Card>
       ) : (
-        <Card>
-          <p className="text-sm text-slate-700">
-            Você já enviou uma proposta ou a solicitação não está mais aberta.
-          </p>
-        </Card>
+        <Feedback
+          variant="warning"
+          title="Ação indisponível"
+          description="Você já enviou uma proposta ou a solicitação não está mais aberta."
+        />
       )}
     </div>
   );

@@ -3,6 +3,9 @@ import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/src/lib/supabase/server";
 import { Card } from "@/components/Card";
 import { Button } from "@/components/Button";
+import { PageHeader } from "@/components/PageHeader";
+import { Feedback } from "@/components/Feedback";
+import { StatusBadge } from "@/components/StatusBadge";
 import type { FreightRequest } from "@/src/lib/db/types";
 
 export default async function RequestsPage() {
@@ -39,34 +42,31 @@ export default async function RequestsPage() {
   const requests = (rows ?? []) as FreightRequest[];
 
   return (
-    <div className="mx-auto max-w-4xl space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-xl font-semibold tracking-tight text-brand-secondary">
-            Solicitações de frete
-          </h1>
-          <p className="text-sm text-slate-600">
-            Solicitações criadas pela sua empresa.
-          </p>
-        </div>
-
-        <Link href="/app/requests/new">
-          <Button>Nova solicitação</Button>
-        </Link>
-      </div>
+    <div className="space-y-4">
+      <PageHeader
+        title="Solicitações (antigo)"
+        subtitle="Mantido por compatibilidade. Prefira a área /solicitacoes."
+        cta={
+          <Link href="/app/requests/new">
+            <Button>Nova solicitação</Button>
+          </Link>
+        }
+      />
 
       {error ? (
-        <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-800">
-          Não foi possível carregar as solicitações.
-        </div>
+        <Feedback
+          variant="error"
+          title="Não foi possível carregar as solicitações."
+          description="Tente recarregar a página."
+        />
       ) : null}
 
       {requests.length === 0 && !error ? (
-        <Card>
-          <p className="text-sm text-slate-700">
-            Nenhuma solicitação ainda. Crie a primeira para receber propostas.
-          </p>
-        </Card>
+        <Feedback
+          variant="info"
+          title="Nenhuma solicitação ainda"
+          description="Crie a primeira para receber propostas."
+        />
       ) : null}
 
       <div className="grid gap-3">
@@ -78,7 +78,7 @@ export default async function RequestsPage() {
                   {r.origin_city}/{r.origin_state} → {r.destination_city}/{r.destination_state}
                 </div>
                 <div className="text-xs text-slate-500">
-                  Status: <span className="font-medium">{r.status}</span>
+                  Status: <StatusBadge kind="request" status={r.status} />
                 </div>
               </div>
               <div className="text-xs text-slate-500">

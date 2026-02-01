@@ -3,6 +3,8 @@ import { headers } from "next/headers";
 import { createSupabaseServerClient } from "@/src/lib/supabase/server";
 import { Card } from "@/components/Card";
 import { Button } from "@/components/Button";
+import { PageHeader } from "@/components/PageHeader";
+import { Feedback } from "@/components/Feedback";
 import { StatusBadge } from "@/components/StatusBadge";
 import type { FreightQuoteStatus } from "@/src/lib/db/types";
 import { escolherProposta } from "./actions";
@@ -101,29 +103,26 @@ export default async function SolicitacaoDetalhePage({
   const canChoose = request.status === "OPEN" && !request.selected_quote_id;
 
   return (
-    <div className="mx-auto max-w-5xl space-y-4">
-      <div className="space-y-1">
-        <h1 className="text-xl font-semibold tracking-tight text-brand-secondary">
-          Detalhe da solicitação
-        </h1>
-        <p className="text-sm text-slate-600">
-          {request.origin_city}/{request.origin_state} → {request.destination_city}/{request.destination_state}
-        </p>
-        <p className="text-xs text-slate-500">
-          Compare as propostas e escolha a vencedora. Isso fecha a solicitação.
-        </p>
-      </div>
+    <div className="space-y-4">
+      <PageHeader
+        title="Detalhe da solicitação"
+        subtitle={`${request.origin_city}/${request.origin_state} → ${request.destination_city}/${request.destination_state}`}
+      />
+
+      <p className="text-xs text-slate-500">
+        Compare as propostas e escolha a vencedora. Isso fecha a solicitação.
+      </p>
 
       {errorText ? (
-        <div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-800">
-          {errorText}
-        </div>
+        <Feedback variant="error" title={errorText} />
       ) : null}
 
       {successText ? (
-        <div className="rounded-md border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-800">
-          Proposta escolhida. Solicitação fechada.
-        </div>
+        <Feedback
+          variant="success"
+          title="Proposta escolhida"
+          description="Solicitação fechada e novas propostas bloqueadas."
+        />
       ) : null}
 
       <Card className="space-y-2">
@@ -180,9 +179,11 @@ export default async function SolicitacaoDetalhePage({
         <h2 className="text-sm font-semibold text-slate-900">Propostas</h2>
 
         {canChoose ? (
-          <div className="rounded-md border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">
-            Ao escolher, a solicitação será fechada e novas propostas serão bloqueadas.
-          </div>
+          <Feedback
+            variant="warning"
+            title="Ao escolher, a solicitação será fechada"
+            description="Depois disso, novas propostas serão bloqueadas."
+          />
         ) : null}
 
         {quotes.length === 0 ? (

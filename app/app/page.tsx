@@ -2,6 +2,8 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/Button";
 import { Card } from "@/components/Card";
+import { PageHeader } from "@/components/PageHeader";
+import { Feedback } from "@/components/Feedback";
 import { createSupabaseServerClient } from "@/src/lib/supabase/server";
 
 export default async function AppPage() {
@@ -41,61 +43,63 @@ export default async function AppPage() {
   const showProfileWarning = !profile?.role;
 
   return (
-    <div className="mx-auto max-w-2xl">
-      <Card className="space-y-4">
-        <div className="space-y-1">
-          <h1 className="text-xl font-semibold tracking-tight text-brand-secondary">
-            Bem-vindo ao RotaClick
-          </h1>
-          <p className="text-sm text-slate-600">
-            Escolha uma opção abaixo para continuar.
-          </p>
-        </div>
+    <div className="space-y-4">
+      <PageHeader
+        title="Bem-vindo ao RotaClick"
+        subtitle="Escolha uma opção abaixo para continuar."
+      />
 
-        {showProfileWarning ? (
-          <div className="rounded-md border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">
-            Não consegui carregar seu <strong>perfil</strong> (role) no banco. Sem isso, os
-            links do dashboard não aparecem.
-            <div className="mt-2 text-xs text-amber-800">
+      {showProfileWarning ? (
+        <Feedback
+          variant="warning"
+          title="Não consegui carregar seu perfil (role) no banco"
+          description="Sem isso, os links do dashboard não aparecem."
+        />
+      ) : null}
+
+      {showProfileWarning ? (
+        <Card className="space-y-2">
+          <div className="text-xs text-slate-600">
+            <div>
+              <strong>User ID:</strong> {data.user.id}
+            </div>
+            {profileError ? (
               <div>
-                <strong>User ID:</strong> {data.user.id}
+                <strong>Erro do Supabase:</strong>{" "}
+                <span className="font-mono">
+                  {profileError.code ? `${profileError.code}: ` : ""}
+                  {profileError.message}
+                </span>
               </div>
-              {profileError ? (
-                <div className="mt-2">
-                  <strong>Erro do Supabase:</strong>{" "}
-                  <span className="font-mono">
-                    {profileError.code ? `${profileError.code}: ` : ""}
-                    {profileError.message}
-                  </span>
-                </div>
-              ) : null}
-              <div>
-                <strong>Dica:</strong> confira se existe uma linha em <code>public.profiles</code>
-                com esse <code>id</code> e se as policies de RLS permitem <code>SELECT</code> do
-                próprio usuário.
-              </div>
+            ) : null}
+            <div>
+              <strong>Dica:</strong> confira se existe uma linha em <code>public.profiles</code>
+              com esse <code>id</code> e se as policies de RLS permitem <code>SELECT</code> do
+              próprio usuário.
             </div>
           </div>
+        </Card>
+      ) : null}
+
+      <div className="flex flex-wrap items-center gap-3">
+        {profile?.role === "ADMIN" || profile?.role === "CLIENTE" ? (
+          <Link href="/app/solicitacoes">
+            <Button>Solicitações da minha empresa</Button>
+          </Link>
         ) : null}
 
-        <div className="flex flex-wrap items-center gap-3">
-          {profile?.role === "ADMIN" || profile?.role === "CLIENTE" ? (
-            <Link href="/app/solicitacoes">
-              <Button>Solicitações da minha empresa</Button>
-            </Link>
-          ) : null}
+        {profile?.role === "TRANSPORTADOR" ? (
+          <Link href="/carrier/solicitacoes">
+            <Button>Solicitações abertas (transportador)</Button>
+          </Link>
+        ) : null}
+      </div>
 
-          {profile?.role === "TRANSPORTADOR" ? (
-            <Link href="/carrier/solicitacoes">
-              <Button>Solicitações abertas (transportador)</Button>
-            </Link>
-          ) : null}
-        </div>
-
-        <form action={signOut}>
-          <Button type="submit">Sair</Button>
-        </form>
-      </Card>
+      <form action={signOut}>
+        <Button type="submit" variant="secondary">
+          Sair
+        </Button>
+      </form>
     </div>
   );
 }

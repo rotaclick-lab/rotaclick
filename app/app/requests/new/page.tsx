@@ -1,9 +1,12 @@
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import { createSupabaseServerClient } from "@/src/lib/supabase/server";
+import Link from "next/link";
 import { Card } from "@/components/Card";
 import { Input } from "@/components/Input";
 import { Button } from "@/components/Button";
+import { PageHeader } from "@/components/PageHeader";
+import { Feedback } from "@/components/Feedback";
 import { createFreightRequest } from "./actions";
 
 export default async function NewFreightRequestPage() {
@@ -35,23 +38,20 @@ export default async function NewFreightRequestPage() {
   }
 
   return (
-    <div className="mx-auto max-w-2xl">
+    <div className="space-y-4">
+      <PageHeader
+        title="Nova solicitação (antigo)"
+        subtitle="Mantido por compatibilidade. Prefira /solicitacoes/nova."
+        cta={
+          <Link href="/app/requests">
+            <Button variant="secondary">Voltar</Button>
+          </Link>
+        }
+      />
+
+      {errorText ? <Feedback variant="error" title={errorText} /> : null}
+
       <Card className="space-y-4">
-        <div className="space-y-1">
-          <h1 className="text-xl font-semibold tracking-tight text-brand-secondary">
-            Nova solicitação de frete
-          </h1>
-          <p className="text-sm text-slate-600">
-            Preencha os dados básicos para receber propostas.
-          </p>
-        </div>
-
-        {errorText ? (
-          <div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-800">
-            {errorText}
-          </div>
-        ) : null}
-
         {/* Server Action */}
         <form action={createFreightRequest} className="space-y-4">
           <div className="grid gap-4 sm:grid-cols-2">
@@ -112,7 +112,7 @@ export default async function NewFreightRequestPage() {
         </form>
       </Card>
 
-      <p className="mt-4 text-xs text-slate-500">
+      <p className="text-xs text-slate-500">
         Neste MVP, a solicitação é criada como <strong>OPEN</strong>.
       </p>
     </div>
