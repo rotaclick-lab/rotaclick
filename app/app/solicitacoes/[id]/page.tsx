@@ -6,6 +6,7 @@ import { Button } from "@/components/Button";
 import { PageHeader } from "@/components/PageHeader";
 import { Feedback } from "@/components/Feedback";
 import { StatusBadge } from "@/components/StatusBadge";
+import { Table, Td, Th, Tr } from "@/components/Table";
 import type { FreightQuoteStatus } from "@/src/lib/db/types";
 import { escolherProposta } from "./actions";
 
@@ -27,6 +28,9 @@ type RequestRow = {
   invoice_value_cents: number | null;
   pickup_date: string | null;
   selected_quote_id: string | null;
+  final_price_cents: number | null;
+  final_deadline_days: number | null;
+  closing_notes: string | null;
   created_at: string;
 };
 
@@ -79,7 +83,7 @@ export default async function SolicitacaoDetalhePage({
   const { data: requestRow, error: requestError } = await supabase
     .from("freight_requests")
     .select(
-      "id, status, origin_zip, origin_city, origin_state, destination_zip, destination_city, destination_state, cargo_type, cargo_description, weight_kg, length_cm, width_cm, height_cm, invoice_value_cents, pickup_date, selected_quote_id, created_at"
+      "id, status, origin_zip, origin_city, origin_state, destination_zip, destination_city, destination_state, cargo_type, cargo_description, weight_kg, length_cm, width_cm, height_cm, invoice_value_cents, pickup_date, selected_quote_id, final_price_cents, final_deadline_days, closing_notes, created_at"
     )
     .eq("id", id)
     .maybeSingle();
@@ -101,6 +105,7 @@ export default async function SolicitacaoDetalhePage({
   const quotes = (quotesRows ?? []) as unknown as QuoteRow[];
 
   const canChoose = request.status === "OPEN" && !request.selected_quote_id;
+  const isClosed = request.status !== "OPEN" || !!request.selected_quote_id;
 
   return (
     <div className="space-y-4">
@@ -175,6 +180,41 @@ export default async function SolicitacaoDetalhePage({
         ) : null}
       </Card>
 
+      {isClosed && request.status === "CLOSED" ? (
+        <Card className="space-y-2">
+          <h2 className="text-sm font-semibold text-slate-900">Contratação</h2>
+
+          <div className="grid gap-2 sm:grid-cols-3">
+            <div className="text-sm text-slate-700">
+              <span className="font-medium">Valor final:</span>{" "}
+              {typeof request.final_price_cents === "number"
+                ? money(request.final_price_cents)
+                : "-"}
+            </div>
+            <div className="text-sm text-slate-700">
+              <span className="font-medium">Prazo final:</span>{" "}
+              {typeof request.final_deadline_days === "number"
+                ? `${request.final_deadline_days} dias`
+                : "-"}
+            </div>
+            <div className="text-sm text-slate-700">
+              <span className="font-medium">Vencedora:</span>{" "}
+              {(() => {
+                const q = quotes.find((x) => x.id === request.selected_quote_id);
+                const name = q?.carriers?.[0]?.name;
+                return name ?? (request.selected_quote_id ? "Selecionada" : "-");
+              })()}
+            </div>
+          </div>
+
+          {request.closing_notes ? (
+            <div className="text-sm text-slate-700">
+              <span className="font-medium">Observação:</span> {request.closing_notes}
+            </div>
+          ) : null}
+        </Card>
+      ) : null}
+
       <Card className="space-y-3">
         <h2 className="text-sm font-semibold text-slate-900">Propostas</h2>
 
@@ -191,60 +231,77 @@ export default async function SolicitacaoDetalhePage({
             Ainda não há propostas para esta solicitação.
           </p>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm">
-              <thead>
-                <tr className="border-b text-xs text-slate-500">
-                  <th className="py-2 pr-4">Transportadora</th>
-                  <th className="py-2 pr-4">Valor</th>
-                  <th className="py-2 pr-4">Prazo</th>
-                  <th className="py-2 pr-4">Status</th>
-                  <th className="py-2">Ação</th>
-                </tr>
-              </thead>
-              <tbody>
-                {quotes.map((q) => {
-                  const isWinner =
-                    request.selected_quote_id === q.id || q.status === "WON";
-                  const carrierName = q.carriers?.[0]?.name;
-                  return (
-                    <tr
-                      key={q.id}
-                      className={
-                        "border-b last:border-b-0 " +
-                        (isWinner ? "bg-emerald-50" : "")
-                      }
-                    >
-                      <td className="py-2 pr-4">
-                        {carrierName ?? q.carrier_id}
+          <Table>
+            <thead>
+              <Tr>
+                <Th>Transportadora</Th>
+                <Th className="text-right">Valor</Th>
+                <Th>Prazo</Th>
+                <Th>Status</Th>
+                <Th className="text-right">Ação</Th>
+              </Tr>
+            </thead>
+            <tbody>
+              {quotes.map((q) => {
+                const isWinner = request.selected_quote_id === q.id || q.status === "WON";
+                const carrierName = q.carriers?.[0]?.name;
+
+                return (
+                  <Tr key={q.id} className={isWinner ? "bg-emerald-50/60" : ""}>
+                    <Td className="font-medium text-slate-900">
+                      <div className="flex items-center gap-2">
+                        <span>{carrierName ?? q.carrier_id}</span>
                         {isWinner ? (
-                          <span className="ml-2 rounded bg-emerald-100 px-2 py-0.5 text-xs text-emerald-800">
+                          <span className="rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold text-emerald-800">
                             Vencedora
                           </span>
                         ) : null}
-                      </td>
-                      <td className="py-2 pr-4">{money(q.price_cents)}</td>
-                      <td className="py-2 pr-4">{q.deadline_days} dias</td>
-                      <td className="py-2 pr-4">
-                        <StatusBadge kind="quote" status={q.status} />
-                      </td>
-                      <td className="py-2">
-                        {canChoose ? (
-                          <form action={escolherProposta}>
-                            <input type="hidden" name="freight_request_id" value={request.id} />
-                            <input type="hidden" name="quote_id" value={q.id} />
-                            <Button type="submit">Escolher como vencedora</Button>
-                          </form>
-                        ) : (
-                          <span className="text-xs text-slate-500">Ação indisponível</span>
-                        )}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+                      </div>
+                    </Td>
+
+                    <Td className="text-right font-semibold text-slate-900">
+                      {money(q.price_cents)}
+                    </Td>
+
+                    <Td>{q.deadline_days} dias</Td>
+
+                    <Td>
+                      <StatusBadge kind="quote" status={q.status} />
+                    </Td>
+
+                    <Td className="text-right">
+                      {canChoose ? (
+                        <form action={escolherProposta} className="flex w-full flex-col items-stretch gap-2 sm:flex-row sm:items-start sm:justify-end">
+                          <input type="hidden" name="freight_request_id" value={request.id} />
+                          <input type="hidden" name="quote_id" value={q.id} />
+
+                          <label className="sr-only" htmlFor={`obs-${q.id}`}>
+                            Observação do fechamento
+                          </label>
+                          <textarea
+                            id={`obs-${q.id}`}
+                            name="observacao_fechamento"
+                            maxLength={280}
+                            rows={2}
+                            placeholder="Obs. do fechamento (opcional, até 280 caracteres)"
+                            className="w-full resize-none rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-600/30 sm:w-72"
+                          />
+
+                          <div className="flex justify-end">
+                            <Button type="submit" className="whitespace-nowrap">
+                            Escolher
+                            </Button>
+                          </div>
+                        </form>
+                      ) : (
+                        <span className="text-xs text-slate-500">Ação indisponível</span>
+                      )}
+                    </Td>
+                  </Tr>
+                );
+              })}
+            </tbody>
+          </Table>
         )}
 
         {!canChoose ? (

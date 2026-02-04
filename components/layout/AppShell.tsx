@@ -10,14 +10,14 @@ export type AppShellProps = {
 
 export function AppShell({ role, topbarRight, children }: AppShellProps) {
   return (
-    <div className="min-h-dvh bg-slate-50 text-slate-900">
+    <div className="min-h-dvh bg-slate-100 text-slate-900">
       <Topbar right={topbarRight} />
 
-      <div className="mx-auto flex max-w-7xl">
+      <div className="mx-auto flex max-w-6xl">
         <Sidebar role={role} />
 
         <main className="w-full px-4 py-8">
-          <div className="mx-auto w-full max-w-5xl">{children}</div>
+          <div className="mx-auto w-full max-w-4xl">{children}</div>
         </main>
       </div>
     </div>
