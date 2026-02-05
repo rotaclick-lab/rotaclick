@@ -15,9 +15,24 @@ const NAV: NavItem[] = [
     roles: ["ADMIN", "CLIENTE"],
   },
   {
+    label: "Cotações",
+    href: "/app/cotacoes",
+    roles: ["ADMIN", "CLIENTE"],
+  },
+  {
+    label: "Nova cotação",
+    href: "/app/cotacoes/nova",
+    roles: ["ADMIN", "CLIENTE"],
+  },
+  {
     label: "Solicitações abertas",
     href: "/carrier/solicitacoes",
     roles: ["ADMIN", "TRANSPORTADOR"],
+  },
+  {
+    label: "Tabelas de frete",
+    href: "/carrier/tabelas",
+    roles: ["TRANSPORTADOR"],
   },
 ];
 
